@@ -25,6 +25,9 @@ public class UserService implements UserItf{
         return userRepository.findByEmail(email);
     }
     
+    public Optional<User> getById(Long id) {
+        return userRepository.findById(id);
+    }
 
 
 }

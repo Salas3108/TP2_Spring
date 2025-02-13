@@ -8,5 +8,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     // On peut ajouter des méthodes de recherche personnalisées ici
     Optional<User> findByEmail(String email);
+    Optional<User> findById(long id);
+    
     
 }

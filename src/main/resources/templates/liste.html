@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Liste des Commandes</title>
+</head>
+<body>
+    <h2>Mes Commandes</h2>
+
+    <form action="/commandes/ajouter" method="post">
+        <input type="text" name="description" placeholder="Description de la commande" required>
+        <button type="submit">Créer Commande</button>
+    </form>
+
+    <div th:each="commande : ${commandes}">
+        <h3 th:text="${commande.description}"></h3>
+        <form th:action="@{/commandes/{commandeId}/supprimer(commandeId=${commande.id})}" method="post">
+            <button type="submit">Supprimer Commande</button>
+        </form>
+    </div>
+</body>
+</html>

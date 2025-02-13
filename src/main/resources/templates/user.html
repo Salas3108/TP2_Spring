@@ -3,12 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>user</title>
+    <title>Utilisateur</title>
 </head>
 <body>
 
-    <h2>Bonjour</h2>
+    <h2>Bonjour <span th:text="${user.nom}"></span> !</h2>
+
     <a href="/home">Se déconnecter</a>
-    
+
+    <h3>Mes Commandes</h3>
+
+    <!-- Formulaire pour créer une nouvelle commande -->
+    <form action="/commandes/ajouter" method="post">
+        <input type="text" name="description" placeholder="Description de la commande" required>
+        <button type="submit">Créer Commande</button>
+    </form>
+
+    <!-- Affichage des commandes existantes -->
+    <div th:if="${commandes != null}">
+        <h4>Liste de vos commandes :</h4>
+        <ul>
+            <li th:each="commande : ${commandes}">
+                <span th:text="${commande.description}"></span>
+                <a th:href="@{/commandes/{commandeId}(commandeId=${commande.id})}">Voir et ajouter des produits</a>
+            </li>
+        </ul>
+    </div>
+
 </body>
 </html>
