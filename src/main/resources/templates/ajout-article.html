@@ -9,11 +9,44 @@
 
 <h3>Ajouter un produit à la commande : <span th:text="${commande.description}"></span></h3>
 
-<form action="/commandes/{commande.id}/ajouter-produit" method="post">
+<form th:action="@{/commandes/{commandeId}/ajout-article(commandeId=${commande.id})}" method="post">
+    <input type="hidden" name="commandeId" th:value="${commande.id}">
     <input type="text" name="nom" placeholder="Nom du produit" required>
     <input type="number" name="quantite" placeholder="Quantité" required>
+	<input type="number" name="prix" placeholder="Prix" required>
     <button type="submit">Ajouter Produit</button>
 </form>
+
+<!-- Affichage des articles de la commande -->
+<h3>Liste des articles</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Quantité</th>
+            <th>Prix</th>
+            <th>Action</th> <!-- Nouvelle colonne pour le bouton de suppression -->
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="article : ${articles}">
+            <td th:text="${article.nom}"></td>
+            <td th:text="${article.quantite}"></td>
+            <td th:text="${article.prix}"></td>
+            <td>
+                <form th:action="@{/commandes/{commandeId}/supprimer-article/{articleId}(commandeId=${commande.id}, articleId=${article.id})}" method="post">
+                    <button type="submit">Supprimer</button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+<a th:href="@{/commandes/{commandeId}/imprimer(commandeId=${commande.id})}" class="print-button">
+    Voir et Imprimer les articles
+</a>
+
 
 </body>
 </html>

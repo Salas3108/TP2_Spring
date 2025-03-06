@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impression des Articles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+        .print-button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .print-button:hover {
+            background-color: darkblue;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Liste des articles de la commande : <span th:text="${commande.description}"></span></h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Quantité</th>
+            <th>Prix</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="article : ${commande.articles}">
+            <td th:text="${article.nom}"></td>
+            <td th:text="${article.quantite}"></td>
+            <td th:text="${article.prix}"></td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Bouton pour imprimer la page -->
+<button class="print-button" onclick="window.print()">Imprimer</button>
+
+</body>
+</html>

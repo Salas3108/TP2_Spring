@@ -19,6 +19,8 @@ public class CommandeController {
     @Autowired
     private UserRepository userRepository;
 
+    
+    
     // Créer une commande
     @PostMapping("/ajouter")
     public RedirectView creerCommande(@RequestParam String description, HttpSession session) {
@@ -41,14 +43,17 @@ public class CommandeController {
     @GetMapping("/{commandeId}")
     public ModelAndView afficherPageAjoutProduit(@PathVariable Long commandeId, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return new ModelAndView("redirect:/home"); // Redirection si l'utilisateur n'est pas connecté
+        if (userId == null || !estProprietaireDeCommande(userId, commandeId)) {
+            return new ModelAndView("redirect:/home"); // Redirection si non connecté ou non propriétaire
         }
 
         Optional<Commande> commandeOpt = commandeService.getCommandeById(commandeId);
         ModelAndView modelAndView = new ModelAndView();
+
         if (commandeOpt.isPresent()) {
-            modelAndView.addObject("commande", commandeOpt.get());
+            Commande commande = commandeOpt.get();
+            modelAndView.addObject("commande", commande);
+            modelAndView.addObject("articles", commande.getArticles()); // Récupérer la liste des articles
             modelAndView.setViewName("ajout-article");
         } else {
             modelAndView.setViewName("redirect:/commandes/");
@@ -57,22 +62,69 @@ public class CommandeController {
         return modelAndView;
     }
 
+
     // Ajouter un produit à la commande
     @PostMapping("/{commandeId}/ajout-article")
-    public RedirectView ajouterProduit(@PathVariable Long commandeId, @RequestParam String nom, @RequestParam int quantite, HttpSession session) {
+    public RedirectView ajouterProduit(
+            @PathVariable Long commandeId,
+            @RequestParam String nom,
+            @RequestParam int quantite,
+            @RequestParam int prix,
+            HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null || !estProprietaireDeCommande(userId, commandeId)) {
+            return new RedirectView("/home");
+        }
+
+        // Ajouter l'article à la commande
+        commandeService.addArticleToCommande(commandeId, nom, quantite, prix);
+
+        return new RedirectView("/commandes/" + commandeId); // Redirection vers la commande
+    }
+    
+ // Supprimer un article d'une commande
+    @PostMapping("/{commandeId}/supprimer-article/{articleId}")
+    public RedirectView supprimerArticle(
+            @PathVariable Long commandeId,
+            @PathVariable Long articleId,
+            HttpSession session) {
+
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return new RedirectView("/home"); // Redirection si l'utilisateur n'est pas connecté
         }
 
-        Optional<Commande> commandeOpt = commandeService.getCommandeById(commandeId);
-        
-        if (commandeOpt.isPresent()) {
-            Commande commande = commandeOpt.get();
-            commande.addArticle(nom, quantite, 10.0); // Ajout d'un produit avec un prix fixe de 10.0
-            commandeService.creerCommande(commande.getDescription(), commande.getUser()); // Sauvegarde
-        }
-        
-        return new RedirectView("/commandes/" + commandeId); // Redirection vers la commande
+        commandeService.supprimerArticleDeCommande(commandeId, articleId);
+
+        return new RedirectView("/commandes/" + commandeId); // Redirection vers la commande après suppression
     }
+    
+ // Afficher la page d'impression des articles d'une commande
+    @GetMapping("/{commandeId}/imprimer")
+    public ModelAndView afficherPageImpression(@PathVariable Long commandeId, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null || !estProprietaireDeCommande(userId, commandeId)) {
+            return new ModelAndView("redirect:/home");
+        }
+
+        Optional<Commande> commandeOpt = commandeService.getCommandeById(commandeId);
+        ModelAndView modelAndView = new ModelAndView();
+        if (commandeOpt.isPresent()) {
+            modelAndView.addObject("commande", commandeOpt.get());
+            modelAndView.setViewName("impression-articles");
+        } else {
+            modelAndView.setViewName("redirect:/commandes/");
+        }
+
+        return modelAndView;
+    }
+    
+    
+    
+    private boolean estProprietaireDeCommande(Long userId, Long commandeId) {
+        Optional<Commande> commandeOpt = commandeService.getCommandeById(commandeId);
+        return commandeOpt.isPresent() && commandeOpt.get().getUser().getId() == userId;
+    }
+
+
 }

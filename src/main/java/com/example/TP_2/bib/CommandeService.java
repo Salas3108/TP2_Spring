@@ -36,4 +36,19 @@ public class CommandeService implements CommandeItf {
             commandeRepository.save(commande);
         }
     }
+    
+    
+    // Méthode pour supprimer un article à une commande
+    @Override
+    public void supprimerArticleDeCommande(Long commandeId, Long articleId) {
+        Optional<Commande> commandeOpt = commandeRepository.findById(commandeId);
+        if (commandeOpt.isPresent()) {
+            Commande commande = commandeOpt.get();
+            commande.getArticles().removeIf(article -> article.getId().equals(articleId));
+            commandeRepository.save(commande);
+        }
+    }
+    
+    
+
 }
