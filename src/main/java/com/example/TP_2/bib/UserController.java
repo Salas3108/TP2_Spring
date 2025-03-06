@@ -20,28 +20,28 @@ public class UserController {
     @Autowired
     private CommandeItf commandeService;
 
-    @GetMapping("/home")
+    @GetMapping("store/home")
     public ModelAndView home() {
-        return new ModelAndView("/home");
+        return new ModelAndView("/store/home");
     }
     
     // Création de compte
-    @PostMapping("/register")
+    @PostMapping("store/register")
     public RedirectView register(@RequestParam String email,
                                  @RequestParam String mdp,
                                  @RequestParam String nom,
                                  @RequestParam String prenom) {
         userService.register(email, mdp, nom, prenom);
-        return new RedirectView("/home");
+        return new RedirectView("/store/home");
     }
 
     // Page utilisateur avec la liste des commandes
-    @GetMapping("/user")
+    @GetMapping("store/user")
     public ModelAndView user(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
 
         if (userId == null) {
-            return new ModelAndView("redirect:/home");
+            return new ModelAndView("redirect:/store/home");
         }
 
         Optional<User> userOpt = userService.getById(userId);
@@ -53,11 +53,11 @@ public class UserController {
             model.addAttribute("commandes", commandes);
         }
 
-        return new ModelAndView("/user");
+        return new ModelAndView("store/user");
     }
 
     // Authentification 
-    @PostMapping("/authenticate")
+    @PostMapping("store/authenticate")
     public RedirectView authenticate(@RequestParam String email, 
                                      @RequestParam String mdp,
                                      HttpSession session) {
@@ -65,16 +65,16 @@ public class UserController {
 
         if (user.isPresent()) {
             session.setAttribute("userId", user.get().getId());  
-            return new RedirectView("/user");
+            return new RedirectView("/store/user");
         } else {
-            return new RedirectView("/home?error=true");
+            return new RedirectView("store/home?error=true");
         }
     }	
 
     // Déconnexion
-    @GetMapping("/logout")
+    @GetMapping("logout")
     public RedirectView logout(HttpSession session) {
         session.invalidate();
-        return new RedirectView("/home");
+        return new RedirectView("store/home");
     }
 }

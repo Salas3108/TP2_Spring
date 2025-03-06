@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/commandes")
+@RequestMapping("store/commandes")
 public class CommandeController {
 
     @Autowired
@@ -27,16 +27,16 @@ public class CommandeController {
         Long userId = (Long) session.getAttribute("userId");
         
         if (userId == null) {
-            return new RedirectView("/home"); // Redirection si l'utilisateur n'est pas connecté
+            return new RedirectView("store/home"); // Redirection si l'utilisateur n'est pas connecté
         }
 
         Optional<User> userOpt = userRepository.findById(userId);
         if (userOpt.isPresent()) {
             Commande commande = commandeService.creerCommande(description, userOpt.get());
-            return new RedirectView("/commandes/" + commande.getId()); // Redirection vers la commande
+            return new RedirectView("/store/commandes/" + commande.getId()); // Redirection vers la commande
         }
 
-        return new RedirectView("/commandes/"); // Si l'utilisateur n'existe pas
+        return new RedirectView("store/commandes/"); // Si l'utilisateur n'existe pas
     }
 
     // Afficher la page d'ajout de produits pour une commande spécifique
@@ -44,7 +44,7 @@ public class CommandeController {
     public ModelAndView afficherPageAjoutProduit(@PathVariable Long commandeId, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null || !estProprietaireDeCommande(userId, commandeId)) {
-            return new ModelAndView("redirect:/home"); // Redirection si non connecté ou non propriétaire
+            return new ModelAndView("redirect:/store/home"); // Redirection si non connecté ou non propriétaire
         }
 
         Optional<Commande> commandeOpt = commandeService.getCommandeById(commandeId);
@@ -54,9 +54,9 @@ public class CommandeController {
             Commande commande = commandeOpt.get();
             modelAndView.addObject("commande", commande);
             modelAndView.addObject("articles", commande.getArticles()); // Récupérer la liste des articles
-            modelAndView.setViewName("ajout-article");
+            modelAndView.setViewName("store/ajout-article");
         } else {
-            modelAndView.setViewName("redirect:/commandes/");
+            modelAndView.setViewName("redirect:/store/commandes/");
         }
 
         return modelAndView;
@@ -69,17 +69,17 @@ public class CommandeController {
             @PathVariable Long commandeId,
             @RequestParam String nom,
             @RequestParam int quantite,
-            @RequestParam int prix,
+            @RequestParam double prix,
             HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null || !estProprietaireDeCommande(userId, commandeId)) {
-            return new RedirectView("/home");
+            return new RedirectView("store/home");
         }
 
         // Ajouter l'article à la commande
         commandeService.addArticleToCommande(commandeId, nom, quantite, prix);
 
-        return new RedirectView("/commandes/" + commandeId); // Redirection vers la commande
+        return new RedirectView("/store/commandes/" + commandeId); // Redirection vers la commande
     }
     
  // Supprimer un article d'une commande
@@ -91,12 +91,12 @@ public class CommandeController {
 
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
-            return new RedirectView("/home"); // Redirection si l'utilisateur n'est pas connecté
+            return new RedirectView("/store/home"); // Redirection si l'utilisateur n'est pas connecté
         }
 
         commandeService.supprimerArticleDeCommande(commandeId, articleId);
 
-        return new RedirectView("/commandes/" + commandeId); // Redirection vers la commande après suppression
+        return new RedirectView("/store/commandes/" + commandeId); // Redirection vers la commande après suppression
     }
     
  // Afficher la page d'impression des articles d'une commande
@@ -104,16 +104,16 @@ public class CommandeController {
     public ModelAndView afficherPageImpression(@PathVariable Long commandeId, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null || !estProprietaireDeCommande(userId, commandeId)) {
-            return new ModelAndView("redirect:/home");
+            return new ModelAndView("redirect:/store/home");
         }
 
         Optional<Commande> commandeOpt = commandeService.getCommandeById(commandeId);
         ModelAndView modelAndView = new ModelAndView();
         if (commandeOpt.isPresent()) {
             modelAndView.addObject("commande", commandeOpt.get());
-            modelAndView.setViewName("impression-articles");
+            modelAndView.setViewName("store/impression-articles");
         } else {
-            modelAndView.setViewName("redirect:/commandes/");
+            modelAndView.setViewName("redirect:/store/commandes/");
         }
 
         return modelAndView;

@@ -9,11 +9,12 @@
 
 <h3>Ajouter un produit à la commande : <span th:text="${commande.description}"></span></h3>
 
-<form th:action="@{/commandes/{commandeId}/ajout-article(commandeId=${commande.id})}" method="post">
+<form th:action="@{/store/commandes/{commandeId}/ajout-article(commandeId=${commande.id})}" method="post">
+
     <input type="hidden" name="commandeId" th:value="${commande.id}">
     <input type="text" name="nom" placeholder="Nom du produit" required>
     <input type="number" name="quantite" placeholder="Quantité" required>
-	<input type="number" name="prix" placeholder="Prix" required>
+	<input type="number" name="prix" step="0.01" placeholder="Prix" required>
     <button type="submit">Ajouter Produit</button>
 </form>
 
@@ -34,7 +35,7 @@
             <td th:text="${article.quantite}"></td>
             <td th:text="${article.prix}"></td>
             <td>
-                <form th:action="@{/commandes/{commandeId}/supprimer-article/{articleId}(commandeId=${commande.id}, articleId=${article.id})}" method="post">
+                <form th:action="@{/store/commandes/{commandeId}/supprimer-article/{articleId}(commandeId=${commande.id}, articleId=${article.id})}" method="post">
                     <button type="submit">Supprimer</button>
                 </form>
             </td>
@@ -43,7 +44,7 @@
 </table>
 
 
-<a th:href="@{/commandes/{commandeId}/imprimer(commandeId=${commande.id})}" class="print-button">
+<a th:href="@{/store/commandes/{commandeId}/imprimer(commandeId=${commande.id})}" class="print-button">
     Voir et Imprimer les articles
 </a>
 
