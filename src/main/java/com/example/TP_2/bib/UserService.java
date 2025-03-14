@@ -20,14 +20,16 @@ public class UserService implements UserItf{
         userRepository.save(user);
     }
 
-    // Authentification 
+ // Authentification 
     public Optional<User> authenticate(String email, String mdp) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email)
+            .filter(user -> user.getMdp().equals(mdp)); // Vérification du mot de passe
     }
-    
+
     public Optional<User> getById(Long id) {
         return userRepository.findById(id);
     }
+
 
 
 }

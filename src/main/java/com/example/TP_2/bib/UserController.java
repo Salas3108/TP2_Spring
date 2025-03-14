@@ -56,20 +56,23 @@ public class UserController {
         return new ModelAndView("store/user");
     }
 
-    // Authentification 
+ // Authentification 
     @PostMapping("store/authenticate")
-    public RedirectView authenticate(@RequestParam String email, 
+    public ModelAndView authenticate(@RequestParam String email, 
                                      @RequestParam String mdp,
                                      HttpSession session) {
         Optional<User> user = userService.authenticate(email, mdp);
 
         if (user.isPresent()) {
-            session.setAttribute("userId", user.get().getId());  
-            return new RedirectView("/store/user");
+            session.setAttribute("userId", user.get().getId());
+            return new ModelAndView("redirect:/store/user");
         } else {
-            return new RedirectView("store/home?error=true");
+            ModelAndView mav = new ModelAndView("store/home");
+            mav.addObject("error", "Email ou mot de passe incorrect !");
+            return mav;
         }
-    }	
+    }
+
 
     // Déconnexion
     @GetMapping("logout")

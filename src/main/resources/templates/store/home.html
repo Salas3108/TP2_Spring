@@ -6,6 +6,10 @@
     <title>home</title>
 </head>
 <body>
+	
+	
+	<p style="color: red;" th:if="${error}" th:text="${error}"></p>
+
 
     <h2>Connexion</h2>
     <form action="/store/authenticate" method="POST">
@@ -18,6 +22,9 @@
         <button type="submit">Se connecter</button>
     </form>
 
+	
+	
+	
     <h2>Créer un compte</h2>
     <form action="/store/register" method="POST">
         <label for="email">Email :</label>
